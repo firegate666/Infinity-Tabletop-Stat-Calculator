@@ -1,4 +1,4 @@
-package de.mb.infinity;
+package de.mb.swing;
 
 import java.awt.Color;
 import java.awt.Component;

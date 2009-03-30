@@ -28,13 +28,6 @@ public class JDefaultFrame extends JFrame {
         this.addWindowListener(new DefaultListener());
     }
 
-    public static void main(String[] args) {
-        JDefaultFrame test = new JDefaultFrame();
-        test.hide();
-        test.setBounds(0, 0, 640, 480);
-        test.show();
-    }
-
     class DefaultListener extends WindowAdapter {
         public void windowClosing(WindowEvent e) {
             new CloseAction(e);
@@ -43,26 +36,5 @@ public class JDefaultFrame extends JFrame {
     }
 
     // Internal classes
-    class CloseAction {
-        private String _msg =
-            ResourceBundle.getBundle("de.mb.swing.jdefaultframe").getString(
-                "closingdialog_message");
-        private String _title =
-            ResourceBundle.getBundle("de.mb.swing.jdefaultframe").getString(
-                "closingdialog_title");
-
-        private void action(AWTEvent e) {
-            int test =
-                JOptionPane.showConfirmDialog(
-                    (Component) e.getSource(),
-                    _msg,
-                    _title,
-                    JOptionPane.YES_NO_OPTION);
-            if (test == 0)
-                System.exit(0);
-        }
-        public CloseAction(AWTEvent e) {
-            action(e);
-        }
-    }
+    
 }
