@@ -133,7 +133,7 @@ public class Gui extends JDefaultFrame implements ActionListener {
 
 		this.add(top, BorderLayout.NORTH);
 
-		output.add(new JScrollPane(tab));
+		output.add(tab);
 
 		this.add(output, BorderLayout.CENTER);
 		this.add(progress, BorderLayout.EAST);
@@ -268,7 +268,7 @@ public class Gui extends JDefaultFrame implements ActionListener {
 						+ "\n\nDas Ergebnis der Analyse wurde nach " + outfile
 						+ " geschrieben.");
 			}
-			tab.add(result, ew_attacker + "(" + num_dices + ")/" + ew_defender);
+			tab.add(result.getScrollPane(), ew_attacker + "(" + num_dices + ")/" + ew_defender);
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(null,
 					"Es ist ein Fehler aufgetreten: " + ex.getMessage());

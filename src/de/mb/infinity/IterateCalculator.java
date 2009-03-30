@@ -64,7 +64,7 @@ public class IterateCalculator implements Runnable {
 		}
 
 		progress.setValue(0);
-		tab.add(result, ">" + max_ew_a + "(>" + max_dices + ")/>" + max_ew_v);
+		tab.add(result.getScrollPane(), ">" + max_ew_a + "(>" + max_dices + ")/>" + max_ew_v);
 		invocator.setEnabled(true);
 	}
 
