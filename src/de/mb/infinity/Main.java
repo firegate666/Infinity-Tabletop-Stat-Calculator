@@ -6,20 +6,27 @@ import java.awt.FileDialog;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.IconifyAction;
+
+import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 
 import de.mb.swing.JAdvancedTextArea;
 import de.mb.swing.JDefaultFrame;
@@ -123,27 +130,27 @@ public class Main {
 				if (count_points)
 					PUNKTE_VERTEIDIGER++;
 			} else if (wuerfel_verteidiger.state == DICE_HIT) {
-				if (EW_ANGREIFER == EW_VERTEIDIGER) {
-					if (wuerfel_angreifer.roll > wuerfel_verteidiger.roll) {
-						wuerfel_angreifer.success = true;
-						if (count_points)
-							PUNKTE_ANGREIFER++;
-					} else if (wuerfel_verteidiger.roll > wuerfel_angreifer.roll) {
-						wuerfel_verteidiger.success_counter++;
-						if (count_points)
-							PUNKTE_VERTEIDIGER++;
-					} else {
-						if (count_points)
-							PUNKTE_SPIELLEITER++;
-					}
-				} else if (EW_ANGREIFER > EW_VERTEIDIGER) {
+				if (wuerfel_angreifer.roll > wuerfel_verteidiger.roll) {
 					wuerfel_angreifer.success = true;
 					if (count_points)
 						PUNKTE_ANGREIFER++;
-				} else {
+				} else if (wuerfel_verteidiger.roll > wuerfel_angreifer.roll) {
 					wuerfel_verteidiger.success_counter++;
 					if (count_points)
 						PUNKTE_VERTEIDIGER++;
+				} else {
+					if (EW_ANGREIFER == EW_VERTEIDIGER) {
+					} else if (EW_ANGREIFER > EW_VERTEIDIGER) {
+						wuerfel_angreifer.success = true;
+						if (count_points)
+							PUNKTE_ANGREIFER++;
+					} else {
+						wuerfel_verteidiger.success_counter++;
+						if (count_points)
+							PUNKTE_VERTEIDIGER++;
+					}
+					if (count_points)
+						PUNKTE_SPIELLEITER++;
 				}
 			} else { // MISS
 				wuerfel_angreifer.success = true;
@@ -439,19 +446,19 @@ public class Main {
 		return result;
 	}
 
-	protected void fireAction() {
-
-	}
-
 	public static void main(String[] args) {
 
 		final JDefaultFrame gui = new JDefaultFrame();
+		gui.setIconImage(Toolkit.getDefaultToolkit().createImage(gui.getClass().getResource("/resource/images/ilogo.png")));
 		gui.setTitle("Infinity Berechner");
 		gui.setLayout(new BorderLayout());
 		gui.setBounds(50, 50, 640, 480);
 
-		final JAdvancedTextArea result = new JAdvancedTextArea("");
-		result.setEditable(false);
+		final ClosableTabbedPane tab = new ClosableTabbedPane();
+		JScrollPane scrolltab = new JScrollPane(tab);
+		
+		/*final JAdvancedTextArea result = new JAdvancedTextArea("");
+		result.setEditable(false);*/
 
 		/*
 		 * final JAdvancedTextArea table = new JAdvancedTextArea("");
@@ -499,6 +506,8 @@ public class Main {
 						if (ret == JOptionPane.NO_OPTION)
 							return;
 					}
+					JAdvancedTextArea result = new JAdvancedTextArea("");
+					result.setEditable(false);
 					result.setVisible(false);
 					String outfile = "";
 					start.setText("Berechnung läuft");
@@ -535,14 +544,14 @@ public class Main {
 								+ "\n\nDas Ergebnis der Analyse wurde nach "
 								+ outfile + " geschrieben.");
 					}
-
+					tab.add(result, ew_a+"("+dices+")/"+ew_v);
 				} catch (Exception ex) {
 					JOptionPane
 							.showMessageDialog(null,
 									"Es ist ein Fehler aufgetreten: "
 											+ ex.getMessage());
 				}
-				result.setVisible(true);
+				//result.setVisible(true);
 			}
 
 		});
@@ -585,6 +594,8 @@ public class Main {
 					final StringBuffer outfile_name = new StringBuffer();
 					final StringBuffer outfile_path  = new StringBuffer();
 					start.setText("Berechnung läuft");
+					final JAdvancedTextArea result = new JAdvancedTextArea("");
+					result.setEditable(false);
 					result.setText("");
 					if (with_matrix.isSelected()) {
 						FileDialog fd = new FileDialog(gui);
@@ -633,7 +644,7 @@ public class Main {
 										+ ew_a + "\t" + result_counter[0]
 										+ "% (" + dices
 										+ " Würfel)\nVerteidiger\t" + ew_v
-										+ "\t" + result_counter[1] + "%+\n");
+										+ "\t" + result_counter[1] + "%\n");
 
 								if (with_matrix.isSelected()) {
 
@@ -648,6 +659,7 @@ public class Main {
 					}
 					
 						progress.setValue(0);
+						tab.add(result, ">"+max_ew_a+"(>"+max_dices+")/>"+max_ew_v);
 					}
 						
 					});
@@ -659,6 +671,8 @@ public class Main {
 		});
 		// iterStart.setEnabled(false);
 
+		JPanel top = new JPanel(new GridLayout(2, 1));
+		
 		settings.add(new JLabel("EW Angreifer"));
 		settings.add(ew_a_text);
 		settings.add(new JLabel("EW Verteidiger"));
@@ -668,9 +682,16 @@ public class Main {
 		settings.add(new JLabel("Matrixausgabe?"));
 		settings.add(with_matrix);
 		
-		gui.add(settings, BorderLayout.NORTH);
+		ImageIcon logo = new ImageIcon(Toolkit.getDefaultToolkit().createImage(gui.getClass().getResource("/resource/images/fulllogo.png")));
+		
+		top.add(new JLabel(logo));
+		top.add(settings);
+		
+		gui.add(top, BorderLayout.NORTH);
 
-		output.add(result.getScrollPane());
+		//output.add(result.getScrollPane());
+		//tab.add(result.getScrollPane());
+		output.add(tab);
 		// output.add(table.getScrollPane());
 
 		gui.add(output, BorderLayout.CENTER);
